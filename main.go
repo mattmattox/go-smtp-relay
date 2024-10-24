@@ -175,17 +175,17 @@ func main() {
 	backend := &Backend{}
 	server := smtpServer.NewServer(backend)
 
-	server.Addr = fmt.Sprintf(":%d", config.CFG.SmtpPort) // Use port from config.
+	server.Addr = fmt.Sprintf(":%d", config.CFG.SMTPPort) // Use port from config.
 	server.Domain = "localhost"
 	server.AllowInsecureAuth = true // No TLS or authentication required.
 
 	// Start the SMTP server
 	listener, err := net.Listen("tcp", server.Addr)
 	if err != nil {
-		log.Fatalf("Failed to bind to port %d: %v", config.CFG.SmtpPort, err)
+		log.Fatalf("Failed to bind to port %d: %v", config.CFG.SMTPPort, err)
 	}
 
-	log.Infof("Starting SMTP server on port %d...", config.CFG.SmtpPort)
+	log.Infof("Starting SMTP server on port %d...", config.CFG.SMTPPort)
 	if err := server.Serve(listener); err != nil {
 		log.Fatalf("Error starting SMTP server: %v", err)
 	}
