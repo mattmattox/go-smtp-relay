@@ -82,7 +82,8 @@ Make sure to set the appropriate SMTP server credentials and configuration setti
     -e EMAIL_SERVER_PASS=yourpassword \
     -e FROM_ADDRESS=no-reply@support.tools \
     -e SERVER_PORT=25 \
-    go-smtp-relay
+    --name go-smtp-relay \
+    cube8021/go-smtp-relay
   ```
 
 ### **Testing SMTP Relay with Telnet:**
