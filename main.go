@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"strings"
+	"time"
 
 	smtpServer "github.com/emersion/go-smtp"
 	"github.com/mattmattox/go-smtp-relay/pkg/config"
@@ -124,10 +125,12 @@ func forwardEmail(from string, to []string, body string) error {
 	return nil
 }
 
-// healthHandler responds with 200 OK to indicate the service is healthy.
+// Health check handler with proper error handling
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	if _, err := w.Write([]byte("OK")); err != nil {
+		log.Errorf("Error writing health check response: %v", err)
+	}
 }
 
 // setupMetrics registers Prometheus metrics.
@@ -144,15 +147,27 @@ func main() {
 	// Set up Prometheus metrics
 	setupMetrics()
 
+	// HTTP server for metrics and health checks with timeouts
+	metricsPort := config.CFG.MetricsPort
+	if metricsPort == 0 {
+		log.Fatal("Metrics port must be set")
+	}
+	httpServer := &http.Server{
+		Addr:         fmt.Sprintf(":%d", metricsPort),
+		Handler:      nil, // Uses default mux with /metrics and /healthz
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	}
+
 	// Set up HTTP server for metrics and health check endpoints
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/healthz", healthHandler)
 
-	// Start the HTTP server for metrics and health check in a goroutine
+	// Start HTTP server in a goroutine
 	go func() {
-		metricsPort := config.CFG.MetricsPort
 		log.Infof("Starting metrics and health check server on :%d...", metricsPort)
-		if err := http.ListenAndServe(fmt.Sprintf(":%d", metricsPort), nil); err != nil {
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error starting metrics server: %v", err)
 		}
 	}()

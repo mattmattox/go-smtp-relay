@@ -83,6 +83,7 @@ Make sure to set the appropriate SMTP server credentials and configuration setti
     -e FROM_ADDRESS=no-reply@support.tools \
     -e SERVER_PORT=25 \
     --name go-smtp-relay \
+    --restart unless-stopped \
     cube8021/go-smtp-relay
   ```
 
