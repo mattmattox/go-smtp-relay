@@ -1,6 +1,6 @@
 module github.com/mattmattox/go-smtp-relay
 
-go 1.22.5
+go 1.22.4
 
 require (
 	github.com/emersion/go-smtp v0.21.3
