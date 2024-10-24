@@ -15,7 +15,7 @@ import (
 type AppConfig struct {
 	Debug           bool   `json:"debug"`
 	MetricsPort     int    `json:"metricsPort"`
-	SmtpPort        int    `json:"smtpPort"`
+	SMTPPort        int    `json:"smtpPort"`
 	Version         bool   `json:"version"`
 	EmailServerHost string `json:"emailServerHost"`
 	EmailServerPort int    `json:"emailServerPort"`
@@ -43,7 +43,7 @@ func LoadConfiguration() {
 
 	CFG.Debug = *debug
 	CFG.MetricsPort = *metricsPort
-	CFG.SmtpPort = *smtpPort
+	CFG.SMTPPort = *smtpPort
 	CFG.Version = *showVersion
 	CFG.EmailServerHost = emailServerHost
 	CFG.EmailServerPort = emailServerPort
